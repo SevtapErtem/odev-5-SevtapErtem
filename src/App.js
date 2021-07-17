@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { TheLayout } from "./container";
 import { Login } from "./view";
-import { useState } from "react";
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -9,12 +9,13 @@ import {
   Redirect,
 } from "react-router-dom";
 import "./app.css";
+import { useState } from "react";
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    JSON.parse(localStorage.getItem("isLoggedIn"))
-  );
+  let isUser = JSON.parse(localStorage.getItem("isLoggedIn")) ?? false;
 
+  const [isLoggedIn, setisLoggedIn] = useState(isUser);
+  console.log(isLoggedIn);
   return (
     <Router>
       <Switch>
@@ -22,16 +23,15 @@ const App = () => {
           <div>404</div>
         </Route>
         <Route exact path="/login">
-          <Login setIsLoggedIn={setIsLoggedIn} isLoggedIn={isLoggedIn} />
-        </Route>
-
-        <Route path="/">
-          {isLoggedIn === null ? (
-            <Redirect to="/login" />
+          {!isLoggedIn ? (
+            <Login setisLoggedIn={setisLoggedIn} />
           ) : (
             <Redirect to="/home" />
           )}
-          <TheLayout />
+        </Route>
+
+        <Route path="/">
+          {isLoggedIn ? <TheLayout /> : <Redirect to="/login" />}
         </Route>
       </Switch>
     </Router>

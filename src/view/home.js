@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Header } from "../container";
 import { TweetForm } from "../component/tweetForm";
 import { TweetList } from "../component/tweetList";
-import user from "../view/login";
+//import user from "../view/login";
 
 class Home extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       tweetText: "",
@@ -30,27 +30,36 @@ class Home extends Component {
       })
       .catch((err) => console.log(err));
   }
+  componentWillMount() {
+    let userData = JSON.parse(localStorage.getItem("userInfo"));
+    let isLoggedIn = JSON.parse(localStorage.getItem("isLoggedIn"));
 
+    console.log(userData);
+    console.log(isLoggedIn);
+  }
   onChangeTweetForm(event) {
     this.setState({ tweetText: event.target.value });
   }
 
   handleTweetSubmit() {
-    const newTweets = [...this.state.tweets];
+    let newTweets = this.state.tweets;
+    let userData = JSON.parse(localStorage.getItem("userInfo"));
+    let now = new Date();
 
     newTweets.unshift({
-      id: "svt-svt-svt",
-      username: user.username,
-      //username tanımının yapılması gerektiğini biliyorum.
-      // Ancak login fonksiyonunu çalıştıramadığım için tweet atamıyorum.
-      //Bu sebeple bu satırı yoruma aldım.
-      replyCount: 20,
-      retweetCount: 300,
-      likeCount: 200,
+      id: "123",
+      name: userData.name,
+      username: userData.username,
       tweetContent: this.state.tweetText,
-      dateTime: "4 hours ago",
+      likeCount: 0,
+      retweetCount: 0,
+      replyCount: 0,
+      dateTime: now,
     });
-    this.setState({ tweets: newTweets });
+    debugger;
+    this.setState({
+      tweets: [...newTweets],
+    });
   }
 
   render() {

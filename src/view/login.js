@@ -1,52 +1,76 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
+//import { Redirect } from "react-router-dom";
 import { Icon } from "../component/icon";
 
-const Login = ({ isLoggedIn, setIsLoggedIn }) => {
-  const [loginFormInput, setLoginFormInput] = useState("");
+const Login = ({ setisLoggedIn }) => {
+  const [loginFormUsername, setLoginFormUsername] = useState("");
+  const [loginFormPassword, setLoginFormPassword] = useState("");
 
-  const [userList, setUserList] = useState([]);
-
-  useEffect(() => {
+  const handleSubmitLoginForm = () => {
     fetch("userData.json")
-      .then((response) => response.json())
-      .then((data) => setUserList(data));
-  }, []);
-
-  const handleChangeLoginFormInput = (e) => {
-    setLoginFormInput({
-      ...loginFormInput,
-      [e.target.name]: e.target.value,
-    });
+      .then((response) => {
+        return response.json();
+      })
+      .then((users) => {
+        let findUser = users.find(
+          (user) =>
+            user.username === loginFormUsername &&
+            user.password === loginFormPassword
+        );
+        if (findUser !== undefined) {
+          localStorage.setItem("isLoggedIn", true);
+          setisLoggedIn(findUser);
+          localStorage.setItem("userInfo", JSON.stringify(findUser));
+        } else {
+          alert("Kullanıcı bulunamadı.");
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
-  const handleSubmitLoginForm = (e) => {
-    const currentUser = { ...loginFormInput };
-    let userData = [...userList];
+  //const [userList, setUserList] = useState([]);
 
-    const isUserMatched = userData.some(
-      (user) =>
-        user.username === currentUser.username &&
-        user.password === currentUser.password
-    );
+  //useEffect(() => {
+  //  fetch("userData.json")
+  //   .then((response) => response.json())
+  //   .then((data) => setUserList(data));
+  //}, []);
 
-    if (isUserMatched) {
-      setIsLoggedIn(true);
-      localStorage.setItem("isLoggedIn", JSON.stringfy(true));
-      localStorage.setItem(
-        "user",
-        JSON.stringfy(
-          userList.find((user) => user.username === currentUser.username)
-        )
-      );
-    } else {
-      alert("Kullanıcı bulunamadı.");
-    }
-  };
+  //const handleChangeLoginFormInput = (e) => {
+  //setLoginFormInput({
+  //  ...loginFormInput,
+  // [e.target.name]: e.target.value,
+  // });
+  //};
+
+  //const handleSubmitLoginForm = (e) => {
+  // const currentUser = { ...loginFormInput };
+  // let userData = [...userList];
+
+  //const isUserMatched = userData.some(
+  // (user) =>
+  //  user.username === currentUser.username &&
+  //  user.password === currentUser.password
+  //);
+
+  //if (isUserMatched) {
+  // setIsLoggedIn(true);
+  // localStorage.setItem("isLoggedIn", JSON.stringfy(true));
+  // localStorage.setItem(
+  //  "user",
+  //JSON.stringfy(
+  // userList.find((user) => user.username === currentUser.username)
+  // )
+  //);
+  // } else {
+  //  alert("Kullanıcı bulunamadı.");
+  //}
+  // };
 
   return (
     <div className="login-wrapper">
-      <form className="login-form" action="">
+      <form className="login-form">
         <div className="login-icon-wrapper">
           <Icon size={50} iconName="twitter" color="#1DA1F2" />
         </div>
@@ -55,8 +79,8 @@ const Login = ({ isLoggedIn, setIsLoggedIn }) => {
             className="user-name-input"
             type="text"
             placeholder="username"
-            value={loginFormInput.username}
-            onChange={handleChangeLoginFormInput}
+            value={loginFormUsername}
+            onChange={(e) => setLoginFormUsername(e.target.value)}
           />
         </div>
         <div>
@@ -64,13 +88,14 @@ const Login = ({ isLoggedIn, setIsLoggedIn }) => {
             className="password-input"
             type="password"
             placeholder="password"
-            value={loginFormInput.password}
-            onChange={handleChangeLoginFormInput}
+            value={loginFormPassword}
+            onChange={(e) => setLoginFormPassword(e.target.value)}
           />
         </div>
         <button
           className="login-submit-button"
-          onSubmit={handleSubmitLoginForm}
+          type="button"
+          onClick={handleSubmitLoginForm}
         >
           Login
         </button>
